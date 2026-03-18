@@ -1,0 +1,52 @@
+services:
+  app_modernlvl:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: laravel_app_modernlvl
+    restart: unless-stopped
+    ports:
+      - "8005:80"
+      - "5173:5173"
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db5
+    networks:
+      - laravel5
+
+  db5:
+    image: mysql:8.0
+    container_name: laravel5_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: laravel5_12
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: 1q2w3e4r5t*laravel
+    ports:
+      - "3305:3306"
+    volumes:
+      - dbdata5:/var/lib/mysql
+    networks:
+      - laravel5
+  phpmyadmin5:
+    image: phpmyadmin/phpmyadmin
+    container_name: laravel_phpmyadmin5
+    restart: unless-stopped
+    ports:
+      - "8085:80"
+    environment:
+      PMA_HOST: db5
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      - db5
+    networks:
+      - laravel5
+
+networks:
+  laravel5:
+
+volumes:
+  dbdata5:
